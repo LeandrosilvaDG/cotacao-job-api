@@ -17,6 +17,15 @@ routes.post('/user', controllers.UserController.store)
 routes.put('/user/:id', controllers.UserController.update)
 routes.delete('/user/:id', controllers.UserController.destroy)
 
-routes.get('/test', authMiddleware, (req, res) => res.json({ ok: true }))
+// routes.get('/test', authMiddleware, (req, res) => res.json({ ok: true }))
+
+routes.use(authMiddleware)
+
+// Questions routers
+routes.get('/questions', controllers.QuestionsController.index)
+routes.get('/questions/:questionId', controllers.QuestionsController.show)
+routes.post('/questions', controllers.QuestionsController.store)
+routes.put('/questions/:questionId', controllers.QuestionsController.update)
+routes.delete('/questions/:questionId', controllers.QuestionsController.delete)
 
 module.exports = routes

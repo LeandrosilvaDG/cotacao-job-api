@@ -9,21 +9,11 @@ const QuestionsSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  answersAmount: {
-    type: Number,
-    required: true
-  },
-  options: {
-    type: [{
-      answer: {
-        type: String,
-        required: true
-      },
-      priceIncrement: {
-        type: String
-      }
-    }]
-  }
+  answers: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Answers',
+    require: true
+  }]
 })
 
 module.exports = mongoose.model('Questions', QuestionsSchema)

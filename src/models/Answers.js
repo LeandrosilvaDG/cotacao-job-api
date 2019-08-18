@@ -19,6 +19,11 @@ const AnswersSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Questions',
     required: true
+  },
+  opportunity: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Opportunity',
+    required: true
   }
 })
 

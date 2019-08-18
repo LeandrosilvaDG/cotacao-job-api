@@ -28,4 +28,11 @@ routes.post('/questions', controllers.QuestionsController.store)
 routes.put('/questions/:questionId', controllers.QuestionsController.update)
 routes.delete('/questions/:questionId', controllers.QuestionsController.delete)
 
+// Opportunity routes
+routes.get('/opportunity', controllers.OpportunityController.index)
+routes.get('/opportunity/:opportunityId', controllers.OpportunityController.show)
+routes.post('/opportunity', controllers.OpportunityController.store)
+routes.put('/opportunity/:opportunityId', controllers.OpportunityController.update)
+routes.delete('/opportunity/:opportunityId', controllers.OpportunityController.delete)
+
 module.exports = routes

@@ -1,10 +1,11 @@
 const Questions = require('../models/Questions')
 const Answers = require('../models/Answers')
+const Opportunity = require('../models/Opportunity')
 
 module.exports = {
   async index (req, res) {
     try {
-      const questions = await Questions.find().populate('answers')
+      const questions = await Questions.find().populate(['answers', 'opportunity'])
 
       return res.json({ questions })
     } catch (err) {
@@ -25,9 +26,10 @@ module.exports = {
 
   async store (req, res) {
     try {
-      const { title, description, answers } = req.body
+      const { title, description, opportunity, answers } = req.body
 
-      const question = await Questions.create({ title, description })
+      const question = await Questions.create({ title, description, opportunity })
+
       await Promise.all(answers.map(async answer => {
         const answerQuestion = new Answers({ ...answer, questions: question._id })
 
@@ -35,6 +37,10 @@ module.exports = {
 
         question.answers.push(answerQuestion)
       }))
+
+      const opp = await Opportunity.findById(opportunity)
+      opp.questions.push(question._id)
+      await Opportunity.findByIdAndUpdate(opportunity, { questions: opp.questions }, { new: true })
 
       await question.save()
 
@@ -46,7 +52,7 @@ module.exports = {
 
   async update (req, res) {
     try {
-      const { title, description, answers } = req.body
+      const { title, description, opportunity, answers } = req.body
 
       const question = await Questions.findByIdAndUpdate(req.params.questionId, {
         title,
@@ -57,12 +63,16 @@ module.exports = {
       await Answers.remove({ question: question._id })
 
       await Promise.all(answers.map(async answer => {
-        const answerQuestion = new Answers({ ...answer, questions: question._id })
+        const answerQuestion = new Answers({ ...answer, questions: question._id, opportunity: opportunity })
 
         await answerQuestion.save()
 
         question.answers.push(answerQuestion)
       }))
+
+      const opp = await Opportunity.findById(opportunity)
+      opp.questions.push(question._id)
+      await Opportunity.findByIdAndUpdate(opportunity, { questions: opp.questions }, { new: true })
 
       await question.save()
 

@@ -9,6 +9,11 @@ const QuestionsSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  opportunity: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Opportunity',
+    required: true
+  },
   answers: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Answers'

@@ -14,6 +14,11 @@ const AnswersSchema = new mongoose.Schema({
   },
   priceIncrement: {
     type: String
+  },
+  questions: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Questions',
+    required: true
   }
 })
 

@@ -1,32 +1,93 @@
 const Questions = require('../models/Questions')
+const Answers = require('../models/Answers')
 
 module.exports = {
   async index (req, res) {
-    const questions = await Questions.find()
-    return res.json({ user: req.userId, questions })
+    try {
+      const questions = await Questions.find().populate('answers')
+
+      return res.json({ questions })
+    } catch (err) {
+      return res.status(400).json({ log: 'Error request questions' })
+    }
   },
 
   async show (req, res) {
-    const { id } = req.params
-    const question = await Questions.findOne(id)
-    return res.json({ user: req.userId, question })
+    try {
+      const question = await Questions.findById(req.params.questionId).populate('answers')
+
+      return res.json({ question })
+    } catch (err) {
+      console.log(err)
+      return res.status(400).json({ log: 'Request id question not found' })
+    }
   },
 
   async store (req, res) {
-    const question = await Questions.create(req.body)
-    return res.json({ user: req.userId, question })
+    try {
+      const { title, description, answers } = req.body
+
+      const question = await Questions.create({ title, description })
+      await Promise.all(answers.map(async answer => {
+        const answerQuestion = new Answers({ ...answer, questions: question._id })
+
+        await answerQuestion.save()
+
+        question.answers.push(answerQuestion)
+      }))
+
+      await question.save()
+
+      return res.json({ question })
+    } catch (err) {
+      return res.status(400).json({ log: 'Not create question item' })
+    }
   },
 
   async update (req, res) {
-    const question = Questions.findByIdAndUpdate(req.params.id, req.body, {
-      new: true
-    })
+    try {
+      const { title, description, answers } = req.body
 
-    return res.json({ user: req.userId, question })
+      const question = await Questions.findByIdAndUpdate(req.params.questionId, {
+        title,
+        description
+      }, { new: true })
+
+      question.answers = []
+      await Answers.remove({ question: question._id })
+
+      await Promise.all(answers.map(async answer => {
+        const answerQuestion = new Answers({ ...answer, questions: question._id })
+
+        await answerQuestion.save()
+
+        question.answers.push(answerQuestion)
+      }))
+
+      await question.save()
+
+      return res.json({ question })
+    } catch (err) {
+      return res.status(400).json({ log: 'Not update question' })
+    }
   },
 
   async delete (req, res) {
-    await Questions.findByIdAndDelete(req.params.id)
-    return res.json({ status: 'ok' })
+    try {
+      const question = await Questions.findById(req.params.questionId).populate('answers')
+      const { answers } = question
+
+      if (question) {
+        answers.map(async answer => {
+          await Answers.findByIdAndRemove(answer._id)
+        })
+
+        await Questions.findByIdAndRemove(req.params.questionId)
+      }
+
+      return res.json({ status: 'ok' })
+    } catch (err) {
+      return res.status(400).json({ log: 'Not delete question' })
+    }
   }
 }

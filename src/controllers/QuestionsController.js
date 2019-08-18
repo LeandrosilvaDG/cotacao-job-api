@@ -19,7 +19,6 @@ module.exports = {
 
       return res.json({ question })
     } catch (err) {
-      console.log(err)
       return res.status(400).json({ log: 'Request id question not found' })
     }
   },

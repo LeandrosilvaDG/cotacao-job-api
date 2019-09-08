@@ -22,6 +22,7 @@ routes.get('/questions', controllers.QuestionsController.index)
 routes.get('/questions/:questionId', controllers.QuestionsController.show)
 routes.get('/opportunity', controllers.OpportunityController.index)
 routes.get('/opportunity/:opportunityId', controllers.OpportunityController.show)
+routes.get('/opportunities', controllers.OpportunitiesController.index)
 
 routes.use(authMiddleware)
 
@@ -34,5 +35,10 @@ routes.delete('/questions/:questionId', controllers.QuestionsController.delete)
 routes.post('/opportunity', controllers.OpportunityController.store)
 routes.put('/opportunity/:opportunityId', controllers.OpportunityController.update)
 routes.delete('/opportunity/:opportunityId', controllers.OpportunityController.delete)
+
+// Opportunities routes
+routes.post('/opportunities', controllers.OpportunitiesController.store)
+routes.put('/opportunities/:opportunitiesId', controllers.OpportunitiesController.update)
+routes.delete('/opportunities/:opportunitiesId', controllers.OpportunitiesController.delete)
 
 module.exports = routes
